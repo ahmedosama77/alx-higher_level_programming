@@ -1,21 +1,24 @@
 #!/usr/bin/node
+
 const request = require('request');
 const url = process.argv[2];
 
-request(url, function (err, data, body) {
+request(url, function (err, response, body) {
   if (err) {
     console.log(err);
-  } else {
-    let counter = 0;
+  } else if (response.statusCode === 200) {
     const films = JSON.parse(body).results;
-    for (let result = 0; result < films.length; result++) {
-      const characters = films[result].characters;
-      for (let j = 0; j < characters.length; j++) {
-        if (characters[j] === 'https://swapi-api.hbtn.io/api/people/18/' || characters[j] === 'http://swapi-api.hbtn.io/api/people/18/') {
-          counter += 1;
+    let count = 0;
+    for (const filmIndex in films) {
+      const filmChars = films[filmIndex].characters;
+      for (const charIndex in filmChars) {
+        if (filmChars[charIndex].includes('18')) {
+          count++;
         }
       }
     }
-    console.log(counter);
+    console.log(count);
+  } else {
+    console.log('An error occured. Status code: ' + response.statusCode);
   }
 });
